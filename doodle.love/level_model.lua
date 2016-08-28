@@ -6,16 +6,43 @@ function level_model.new(name)
     local self = { }
     self.raw_data = level_model.load(name)
     self.tabletop = level_model.parse(self.raw_data)
+    self.dimensions = level_model.find_dimensions(self)
     self.player = level_model.find_player(self)
+    self.direction = "right" -- TODO Create a player object and add this to their state
+    self.items = { } -- TODO Create a player object and add this to their state
 
-    -- UPDATING FUNCTIONS
+    -- ######################
+    -- # UPDATING FUNCTIONS #
+    -- ######################
     self.update = function(act)
         local dx = 0
         local dy = 0
-        local ly = #self.tabletop
-        local lx = #(self.tabletop[1])
+        local ly = self.dimensions.y
+        local lx = self.dimensions.x
 
         -- Turning actions into side effects
+        dx, dy = self.act_to_effect(act)
+        if (act == "left") or (act == "right") or (act == "left") or (act == "right") then
+            self.direction = act
+        elseif act == "space" or act == " " then
+            self.pickup_item()
+        end
+
+        -- Applying changes if possible
+        if self.is_walking_possible(self.player.x, self.player.y, dx, dy, lx, ly) then
+            self.tabletop[self.player.y][self.player.x] = "floor"
+            self.tabletop[self.player.y+dy][self.player.x+dx] = "player"
+            self.player.y = self.player.y + dy
+            self.player.x = self.player.x + dx
+        end
+
+        return self
+    end
+
+    self.act_to_effect = function(act)
+        local dx = 0
+        local dy = 0
+
         if act == "up" then
             dy = -1
         elseif act == "down" then
@@ -26,30 +53,38 @@ function level_model.new(name)
             dx = 1
         end
 
-        -- Applying changes if possible
-        if self.is_action_possible(self.player.x, self.player.y, dx, dy, lx, ly) then
-            self.tabletop[self.player.y][self.player.x] = "floor"
-            self.tabletop[self.player.y+dy][self.player.x+dx] = "player"
-            self.player.y = self.player.y + dy
-            self.player.x = self.player.x + dx
+        return dx, dy
+    end
+
+    self.pickup_item = function()
+        local dx = 0
+        local dy = 0
+        local x = self.player.x
+        local y = self.player.y
+
+        dx, dy = self.act_to_effect(self.direction)
+        if self.tabletop[y+dy][x+dx] == "item" then
+            table.insert(self.items, "item")
+            self.tabletop[y+dy][x+dx] = "floor"
         end
 
-        return self
     end
 
-    self.is_action_possible = function(x, y, dx, dy, lx, ly)
-        local outlet = true
+    self.is_walking_possible = function(x, y, dx, dy, lx, ly)
+        local fact = true
 
-        outlet = outlet and (x + dx > 0)
-        outlet = outlet and (x + dx <= lx)
-        outlet = outlet and (y + dy > 0)
-        outlet = outlet and (y + dy <= ly)
-        outlet = outlet and (self.tabletop[y+dy][x+dx] == "floor")
+        fact = fact and (x + dx > 0)
+        fact = fact and (x + dx <= lx)
+        fact = fact and (y + dy > 0)
+        fact = fact and (y + dy <= ly)
+        fact = fact and (self.tabletop[y+dy][x+dx] == "floor")
 
-        return outlet
+        return fact
     end
 
-    -- DRAWING FUNCTIONS
+    -- #####################
+    -- # DRAWING FUNCTIONS #
+    -- #####################
     self.draw = function()
         local outlet = ""
 
@@ -66,6 +101,9 @@ function level_model.new(name)
     return self
 end
 
+-- #########################
+-- # CONSTRUCTOR FUNCTIONS #
+-- #########################
 function level_model.load(name)
     local path = "assets/" .. name .. ".yml"
     local fh = io.open(path)
@@ -110,6 +148,13 @@ function level_model.parse(raw)
     end
 
     return tabletop
+end
+
+function level_model.find_dimensions(self)
+    local dimensions = { }
+    dimensions.y = #self.tabletop
+    dimensions.x = #(self.tabletop[1])
+    return dimensions
 end
 
 function level_model.find_player(self)
