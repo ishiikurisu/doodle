@@ -15,7 +15,8 @@ function level_model.new(name)
     -- ######################
     -- # UPDATING FUNCTIONS #
     -- ######################
-    self.update = function(act, moment)
+    -- # Updating environment
+    self.live = function(moment)
         local x = self.player.x
         local y = self.player.y
         local dx = 0
@@ -23,9 +24,7 @@ function level_model.new(name)
         local ly = self.dimensions.y
         local lx = self.dimensions.x
         local step = "wall"
-
-        -- # Updating environment
-        -- TODO Make people walk without the user action
+        
         for _, person in pairs(self.people) do
             if person.is_update_time(moment) then
                 x, y = person.x, person.y
@@ -40,9 +39,22 @@ function level_model.new(name)
                 end
             end
         end
-         
-        -- # Turning actions into side effects
-        -- ## Tries to walk
+        
+        self.last_moment = moment
+        return self
+    end
+    
+    -- Turning actions into side effects
+    self.update = function(act, moment)
+        local x = self.player.x
+        local y = self.player.y
+        local dx = 0
+        local dy = 0
+        local ly = self.dimensions.y
+        local lx = self.dimensions.x
+        local step = "wall"
+
+        -- Tries to walk
         step = "wall"
         if (act == "left") or (act == "right") or (act == "up") or (act == "down") then
             x, y = self.player.x, self.player.y
@@ -60,14 +72,13 @@ function level_model.new(name)
                     return self.walk_through_door(x+dx, y+dy)
                 end
             end
-        -- ## Tries to pick something up
+        -- Tries to pick something up
         elseif act == "space" or act == " " then
             self.pickup_item()
         end
 
         -- Update structure
         self.last_moment = moment
-        
         return self
     end
 
