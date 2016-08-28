@@ -1,4 +1,5 @@
 local player_model = require "player_model"
+local person_model = require "person_model"
 local door_model = require "door_model"
 local util = require "util"
 local level_model = { }
@@ -8,12 +9,13 @@ function level_model.new(name)
     self.raw_data = level_model.load(name)
     self.tabletop = level_model.parse(self, self.raw_data)
     self.dimensions = level_model.find_dimensions(self)
+    self.last_moment = 0
     self = level_model.find_entities(self, self.raw_data)
 
     -- ######################
     -- # UPDATING FUNCTIONS #
     -- ######################
-    self.update = function(act)
+    self.update = function(act, moment)
         local x = self.player.x
         local y = self.player.y
         local dx = 0
@@ -23,12 +25,27 @@ function level_model.new(name)
         local step = "wall"
 
         -- # Updating environment
-        -- TODO Add door object
-        -- TODO Update NPCs
+        -- TODO Make people walk without the user action
+        for _, person in pairs(self.people) do
+            if person.is_update_time(moment) then
+                x, y = person.x, person.y
+                dx, dy = self.act_to_effect(person.get_direction())
+                if self.is_in_bounds(x, y, dx, dy, lx, ly) then
+                    step = self.tabletop[y+dy][x+dx]
+                    if step == "floor" then
+                        self.tabletop[y][x] = "floor"
+                        self.tabletop[y+dy][x+dx] = "person"
+                        person.walk(dx, dy)
+                    end
+                end
+            end
+        end
          
         -- # Turning actions into side effects
         -- ## Tries to walk
+        step = "wall"
         if (act == "left") or (act == "right") or (act == "up") or (act == "down") then
+            x, y = self.player.x, self.player.y
             dx, dy = self.act_to_effect(act)
             self.player.set_direction(act)
             if self.is_in_bounds(x, y, dx, dy, lx, ly) then
@@ -38,6 +55,8 @@ function level_model.new(name)
                     self.tabletop[y+dy][x+dx] = "player"
                     self.player.walk(dx, dy)
                 elseif step == "door" then
+                    -- TODO store previous level data
+                    -- TODO make player appear out of a door
                     return self.walk_through_door(x+dx, y+dy)
                 end
             end
@@ -46,6 +65,9 @@ function level_model.new(name)
             self.pickup_item()
         end
 
+        -- Update structure
+        self.last_moment = moment
+        
         return self
     end
 
@@ -203,7 +225,7 @@ function level_model.find_entities(self, raw)
         if box[1] == "player"  then
             self.player = player_model.new(box[2])
         elseif box[1] == "person" then
-            table.insert(self.people, player_model.new(box[2]))
+            table.insert(self.people, person_model.new(box[2]))
         elseif box[1] == "door" then
             table.insert(self.doors, door_model.new(box[2]))
         end

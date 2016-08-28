@@ -7,6 +7,7 @@ function level_controller.new(inlet)
     self.actions = { }
     self.level = level_model.new(inlet)
     self.view = level_view.new()
+    self.born = 0
 
     -- UPDATE FUNCTIONS
     self.push = function(action)
@@ -15,8 +16,9 @@ function level_controller.new(inlet)
     end
 
     self.update = function(love)
+        local moment = love.timer.getTime() - self.born
         for _, action in pairs(self.actions) do
-            self.level = self.level.update(action)
+            self.level = self.level.update(action, moment)
         end
         self.actions = { }
         return self
