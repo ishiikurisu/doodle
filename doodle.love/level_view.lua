@@ -17,11 +17,11 @@ function level_view.new()
         love.graphics.setBackgroundColor(0, 0, 0)
         for y, line in pairs(data) do
             for x, it in pairs(line) do
-                if it == "w" then -- wall
+                if it == "wall" then -- wall
                     love.graphics.setColor(15, 16, 17)
-                elseif it == "u" then -- player
+                elseif it == "player" then -- player
                     love.graphics.setColor(150, 58, 30)
-                elseif it == "p" then -- npc
+                elseif it == "person" then -- npc
                     love.graphics.setColor(20, 159, 200)
                 else -- floor
                     love.graphics.setColor(248, 247, 240)

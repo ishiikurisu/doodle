@@ -3,13 +3,15 @@ local level_model = { }
 
 function level_model.new(name)
     local this = { }
-    this.tabletop = level_model.load(name)
-    this.player = { }
+    this.raw_data = level_model.load(name)
+    this.tabletop = level_model.parse(this.raw_data)
+    this.player = { } -- TODO Update player tracking by their position
     this.player.x = 0
     this.player.y = 0
 
     -- UPDATING FUNCTIONS
     this.update = function(act)
+        -- TODO Update function to act according new file model
         local dx = 0
         local dy = 0
         local ly = #this.tabletop
@@ -71,27 +73,48 @@ function level_model.new(name)
 end
 
 function level_model.load(name)
-    local path = "assets/" .. name .. ".txt"
+    local path = "assets/" .. name .. ".yml"
     local fh = io.open(path)
     local raw = fh:read("*line")
-    local splitted = util.split(raw, " ")
-    local y = tonumber(splitted[1])
-    local x = tonumber(splitted[2])
-    local stuff = { }
-    local tabletop = { }
+    local outlet = { }
 
-    for j = 1, y do
+    raw = fh:read("*line")
+    while raw ~= "..." do
+        stuff = util.split(raw, ":")
+        outlet[stuff[1]] = stuff[2]
         raw = fh:read("*line")
-        splitted = util.split(raw, " ")
-        stuff = { }
-
-        for i = 1, x do
-            table.insert(stuff, splitted[i])
-        end
-        table.insert(tabletop, stuff)
     end
 
     fh:close()
+    return outlet
+end
+
+function level_model.parse(raw)
+    local tabletop = { }
+    local dx = tonumber(raw["x"])
+    local dy = tonumber(raw["y"])
+    local line = { }
+    local data = " "
+
+    -- placing floor everywheres
+    for y = 1, dy do
+        line = { }
+        for x = 1, dx do
+            table.insert(line, "floor")
+        end
+        table.insert(tabletop, line)
+    end
+    raw["x"] = nil
+    raw["y"] = nil
+
+    -- placing the rest of stuff
+    for it, raw_data in pairs(raw) do
+        data = util.split(raw_data, " ")
+        dx = tonumber(data[1])
+        dy = tonumber(data[2])
+        tabletop[dy][dx] = it
+    end
+
     return tabletop
 end
 

@@ -24,7 +24,7 @@ function level_controller.new()
 
     -- DRAWING FUNCTIONS
     this.draw = function(love)
-        -- love.graphics.print(this.level.draw())
+        love.graphics.print(this.level.draw())
         this.view.draw(love, this.level.tabletop)
     end
 

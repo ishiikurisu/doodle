@@ -13,4 +13,21 @@ function util.split(inputstr, sep)
     return t
 end
 
+function util.chomp(inlet)
+    local left = 1
+    local right = #inlet
+
+    while string.byte(inlet, left) == ' ' do
+        print(inlet[left])
+        left = left + 1
+    end
+
+
+    while inlet[right] == " " do
+        right = right - 1
+    end
+
+    return string.sub(inlet, left, right)
+end
+
 return util
