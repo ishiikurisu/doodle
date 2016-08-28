@@ -132,6 +132,7 @@ function level_model.parse(raw)
     local dy = 0
 
     -- Get dimensions
+    -- TODO Discover why this is not working
     for _, box in pairs(raw) do
         if box[1] == "x" then
             dx = tonumber(box[2])
@@ -150,6 +151,7 @@ function level_model.parse(raw)
     -- Place stuff
     for _, box in pairs(raw) do
         if (box[1] ~= "x") and (box[1] ~= "y") then
+            print(box[1])
             -- parse location
             line = util.split(box[2], " ")
             dx = tonumber(line[1])
