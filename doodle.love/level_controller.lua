@@ -11,6 +11,7 @@ function level_controller.new()
 
     this.draw = function(love)
         love.graphics.print(this.level.draw())
+        
     end
 
     return this
