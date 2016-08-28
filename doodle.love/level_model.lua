@@ -15,6 +15,8 @@ function level_model.new(name)
     -- # UPDATING FUNCTIONS #
     -- ######################
     self.update = function(act)
+        local x = self.player.x
+        local y = self.player.y
         local dx = 0
         local dy = 0
         local ly = self.dimensions.y
@@ -22,18 +24,18 @@ function level_model.new(name)
 
         -- Turning actions into side effects
         dx, dy = self.act_to_effect(act)
-        if (act == "left") or (act == "right") or (act == "left") or (act == "right") then
+        if (act == "left") or (act == "right") or (act == "up") or (act == "down") then
             self.direction = act
         elseif act == "space" or act == " " then
             self.pickup_item()
         end
 
         -- Applying changes if possible
-        if self.is_walking_possible(self.player.x, self.player.y, dx, dy, lx, ly) then
-            self.tabletop[self.player.y][self.player.x] = "floor"
-            self.tabletop[self.player.y+dy][self.player.x+dx] = "player"
-            self.player.y = self.player.y + dy
-            self.player.x = self.player.x + dx
+        if self.is_in_bounds(x, y, dx, dy, lx, ly) and self.tabletop[y+dy][x+dx] == "floor" then
+            self.tabletop[y][x] = "floor"
+            self.tabletop[y+dy][x+dx] = "player"
+            self.player.y = y + dy
+            self.player.x = x + dx
         end
 
         return self
@@ -63,21 +65,22 @@ function level_model.new(name)
         local y = self.player.y
 
         dx, dy = self.act_to_effect(self.direction)
-        if self.tabletop[y+dy][x+dx] == "item" then
-            table.insert(self.items, "item")
-            self.tabletop[y+dy][x+dx] = "floor"
+        if self.is_in_bounds(x, y, dx, dy, self.dimensions.x, self.dimensions.y) then
+            if self.tabletop[y+dy][x+dx] == "item" then
+                table.insert(self.items, "item")
+                self.tabletop[y+dy][x+dx] = "floor"
+            end
         end
 
     end
 
-    self.is_walking_possible = function(x, y, dx, dy, lx, ly)
+    self.is_in_bounds = function(x, y, dx, dy, lx, ly)
         local fact = true
 
         fact = fact and (x + dx > 0)
         fact = fact and (x + dx <= lx)
         fact = fact and (y + dy > 0)
         fact = fact and (y + dy <= ly)
-        fact = fact and (self.tabletop[y+dy][x+dx] == "floor")
 
         return fact
     end
@@ -110,10 +113,11 @@ function level_model.load(name)
     local raw = fh:read("*line")
     local outlet = { }
 
+    -- Reading and parsing every line
     raw = fh:read("*line")
     while raw ~= "..." do
         stuff = util.split(raw, ":")
-        outlet[stuff[1]] = stuff[2]
+        table.insert(outlet, { stuff[1], stuff[2] } )
         raw = fh:read("*line")
     end
 
@@ -123,28 +127,36 @@ end
 
 function level_model.parse(raw)
     local tabletop = { }
-    local dx = tonumber(raw["x"])
-    local dy = tonumber(raw["y"])
     local line = { }
-    local data = " "
+    local dx = 0
+    local dy = 0
 
-    -- placing floor everywheres
-    for y = 1, dy do
+    -- Get dimensions
+    for _, box in pairs(raw) do
+        if box[1] == "x" then
+            dx = tonumber(box[2])
+        elseif box[1] == "y" then
+            dy = tonumber(box[2])
+        end
+    end
+    for _ = 1, dy do
         line = { }
-        for x = 1, dx do
+        for _ = 1, dx do
             table.insert(line, "floor")
         end
         table.insert(tabletop, line)
     end
-    raw["x"] = nil
-    raw["y"] = nil
 
-    -- placing the rest of stuff
-    for it, raw_data in pairs(raw) do
-        data = util.split(raw_data, " ")
-        dx = tonumber(data[1])
-        dy = tonumber(data[2])
-        tabletop[dy][dx] = it
+    -- Place stuff
+    for _, box in pairs(raw) do
+        if (box[1] ~= "x") and (box[1] ~= "y") then
+            -- parse location
+            line = util.split(box[2], " ")
+            dx = tonumber(line[1])
+            dy = tonumber(line[2])
+            -- store thing in memory
+            tabletop[dy][dx] = box[1]
+        end
     end
 
     return tabletop

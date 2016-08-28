@@ -1,5 +1,0 @@
-4 7
-f f f f f f f
-f u f f f f f
-f f f f f f f
-f f f f f f f
