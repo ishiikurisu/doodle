@@ -5,27 +5,14 @@ function level_model.new(name)
     local this = { }
     this.raw_data = level_model.load(name)
     this.tabletop = level_model.parse(this.raw_data)
-    this.player = { } -- TODO Update player tracking by their position
-    this.player.x = 0
-    this.player.y = 0
+    this.player = level_model.find_player(this)
 
     -- UPDATING FUNCTIONS
     this.update = function(act)
-        -- TODO Update function to act according new file model
         local dx = 0
         local dy = 0
         local ly = #this.tabletop
         local lx = #(this.tabletop[1])
-
-        -- Discovering where the player is
-        for j, line in ipairs(this.tabletop) do
-            for i, it in ipairs(line) do
-                if it == "u" then
-                    this.player.x = i
-                    this.player.y = j
-                end
-            end
-        end
 
         -- Turning actions into side effects
         if act == "up" then
@@ -40,19 +27,25 @@ function level_model.new(name)
 
         -- Applying changes if possible
         if this.is_action_possible(this.player.x, this.player.y, dx, dy, lx, ly) then
-            this.tabletop[this.player.y][this.player.x] = "f"
-            this.tabletop[this.player.y+dy][this.player.x+dx] = "u"
+            this.tabletop[this.player.y][this.player.x] = "floor"
+            this.tabletop[this.player.y+dy][this.player.x+dx] = "player"
+            this.player.y = this.player.y + dy
+            this.player.x = this.player.x + dx
         end
 
         return this
     end
 
     this.is_action_possible = function(x, y, dx, dy, lx, ly)
-        c1 = x + dx > 0
-        c2 = x + dx <= lx
-        c3 = y + dy > 0
-        c4 = y + dy <= ly
-        return c1 and c2 and c3 and c4
+        local outlet = true
+
+        outlet = outlet and (x + dx > 0)
+        outlet = outlet and (x + dx <= lx)
+        outlet = outlet and (y + dy > 0)
+        outlet = outlet and (y + dy <= ly)
+        outlet = outlet and (this.tabletop[y+dy][x+dx] == "floor")
+
+        return outlet
     end
 
     -- DRAWING FUNCTIONS
@@ -116,6 +109,21 @@ function level_model.parse(raw)
     end
 
     return tabletop
+end
+
+function level_model.find_player(this)
+    local player = { }
+
+    for j, line in ipairs(this.tabletop) do
+        for i, it in ipairs(line) do
+            if it == "player" then
+                player.x = i
+                player.y = j
+            end
+        end
+    end
+
+    return player
 end
 
 return level_model

@@ -11,7 +11,7 @@ function level_view.new()
     -- DRAWING FUNCTIONS
     this.draw = function(love, data)
         local side = 50
-        local off = 10
+        local off = 100
         local margin = 10
 
         love.graphics.setBackgroundColor(0, 0, 0)
