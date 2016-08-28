@@ -3,32 +3,32 @@ local level_view = require "level_view"
 local level_controller = { }
 
 function level_controller.new()
-    local this = { }
-    this.actions = { }
-    this.level = level_model.new("level")
-    this.view = level_view.new()
+    local self = { }
+    self.actions = { }
+    self.level = level_model.new("level")
+    self.view = level_view.new()
 
     -- UPDATE FUNCTIONS
-    this.push = function(action)
-        table.insert(this.actions, action)
-        return this
+    self.push = function(action)
+        table.insert(self.actions, action)
+        return self
     end
 
-    this.update = function(love)
-        for _, action in pairs(this.actions) do
-            this.level = this.level.update(action)
+    self.update = function(love)
+        for _, action in pairs(self.actions) do
+            self.level = self.level.update(action)
         end
-        this.actions = { }
-        return this
+        self.actions = { }
+        return self
     end
 
     -- DRAWING FUNCTIONS
-    this.draw = function(love)
-        love.graphics.print(this.level.draw())
-        this.view.draw(love, this.level.tabletop)
+    self.draw = function(love)
+        love.graphics.print(self.level.draw())
+        self.view.draw(love, self.level.tabletop)
     end
 
-    return this
+    return self
 end
 
 return level_controller

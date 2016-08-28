@@ -1,15 +1,15 @@
 local level_view = { }
 
 function level_view.new()
-    local this = { }
+    local self = { }
 
     -- READING FUNCTIONS
-    this.update = function(love)
+    self.update = function(love)
         return { }
     end
 
     -- DRAWING FUNCTIONS
-    this.draw = function(love, data)
+    self.draw = function(love, data)
         local side = 50
         local off = 100
         local margin = 10
@@ -35,7 +35,7 @@ function level_view.new()
         end
     end
 
-    return this
+    return self
 end
 
 return level_view

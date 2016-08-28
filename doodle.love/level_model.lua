@@ -1,18 +1,19 @@
+local player_model = require "player_model"
 local util = require "util"
 local level_model = { }
 
 function level_model.new(name)
-    local this = { }
-    this.raw_data = level_model.load(name)
-    this.tabletop = level_model.parse(this.raw_data)
-    this.player = level_model.find_player(this)
+    local self = { }
+    self.raw_data = level_model.load(name)
+    self.tabletop = level_model.parse(self.raw_data)
+    self.player = level_model.find_player(self)
 
     -- UPDATING FUNCTIONS
-    this.update = function(act)
+    self.update = function(act)
         local dx = 0
         local dy = 0
-        local ly = #this.tabletop
-        local lx = #(this.tabletop[1])
+        local ly = #self.tabletop
+        local lx = #(self.tabletop[1])
 
         -- Turning actions into side effects
         if act == "up" then
@@ -26,33 +27,33 @@ function level_model.new(name)
         end
 
         -- Applying changes if possible
-        if this.is_action_possible(this.player.x, this.player.y, dx, dy, lx, ly) then
-            this.tabletop[this.player.y][this.player.x] = "floor"
-            this.tabletop[this.player.y+dy][this.player.x+dx] = "player"
-            this.player.y = this.player.y + dy
-            this.player.x = this.player.x + dx
+        if self.is_action_possible(self.player.x, self.player.y, dx, dy, lx, ly) then
+            self.tabletop[self.player.y][self.player.x] = "floor"
+            self.tabletop[self.player.y+dy][self.player.x+dx] = "player"
+            self.player.y = self.player.y + dy
+            self.player.x = self.player.x + dx
         end
 
-        return this
+        return self
     end
 
-    this.is_action_possible = function(x, y, dx, dy, lx, ly)
+    self.is_action_possible = function(x, y, dx, dy, lx, ly)
         local outlet = true
 
         outlet = outlet and (x + dx > 0)
         outlet = outlet and (x + dx <= lx)
         outlet = outlet and (y + dy > 0)
         outlet = outlet and (y + dy <= ly)
-        outlet = outlet and (this.tabletop[y+dy][x+dx] == "floor")
+        outlet = outlet and (self.tabletop[y+dy][x+dx] == "floor")
 
         return outlet
     end
 
     -- DRAWING FUNCTIONS
-    this.draw = function()
+    self.draw = function()
         local outlet = ""
 
-        for _, line in ipairs(this.tabletop) do
+        for _, line in ipairs(self.tabletop) do
             for _, it in pairs(line) do
                 outlet = outlet .. it .. " "
             end
@@ -62,7 +63,7 @@ function level_model.new(name)
         return outlet
     end
 
-    return this
+    return self
 end
 
 function level_model.load(name)
@@ -111,10 +112,10 @@ function level_model.parse(raw)
     return tabletop
 end
 
-function level_model.find_player(this)
+function level_model.find_player(self)
     local player = { }
 
-    for j, line in ipairs(this.tabletop) do
+    for j, line in ipairs(self.tabletop) do
         for i, it in ipairs(line) do
             if it == "player" then
                 player.x = i
