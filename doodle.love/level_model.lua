@@ -161,7 +161,8 @@ function level_model.load(name)
     raw = fh:read("*line")
     while raw ~= "..." do
         stuff = util.split(raw, ":")
-        table.insert(outlet, { util.chomp(stuff[1]), util.chomp(stuff[2]) })
+        table.insert(outlet, { util.chomp(stuff[1]), 
+                               util.chomp(stuff[2]) })
         raw = fh:read("*line")
     end
 
