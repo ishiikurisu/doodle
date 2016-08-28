@@ -4,6 +4,9 @@ local player_model = { }
 function player_model.new(inlet)
     local self = { }
     self = player_model.parse(self, inlet)
+    
+    -- TODO Add update function
+    
     return self
 end
 

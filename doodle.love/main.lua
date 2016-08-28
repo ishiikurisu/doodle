@@ -2,10 +2,6 @@ local util = require "util"
 local lc = require "level_controller"
 
 function love.load()
-    local name = "   joe frank  "
-    print("<" .. name .. ">")
-    print("<" .. util.chomp(name) .. ">")
-    
     love.window.setTitle("Example stuff")
     controller = lc.new("level")
 end
