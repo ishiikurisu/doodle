@@ -14,7 +14,8 @@ function util.split(inputstr, sep)
 end
 
 function util.chomp(inlet)
-    return string.gsub(s, "\n$", "")
+    local it = string.gsub(inlet, "%s+$", "")
+    return string.gsub(it, "^%s+", "")
 end
 
 return util

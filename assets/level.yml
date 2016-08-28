@@ -1,9 +1,10 @@
 ---
-x:7
-y:4
-player:2 2
-person:4 4 2000
-item:6 3
-wall:4 1
-wall:4 2
+x: 7
+y: 4
+player: 2 2
+person: 4 4 2000
+item: 6 3
+wall: 4 1
+wall: 4 2
+door: 4 7
 ...
