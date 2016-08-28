@@ -5,11 +5,9 @@ local level_model = { }
 function level_model.new(name)
     local self = { }
     self.raw_data = level_model.load(name)
-    self.tabletop = level_model.parse(self.raw_data)
+    self.tabletop = level_model.parse(self, self.raw_data)
     self.dimensions = level_model.find_dimensions(self)
-    self.player = level_model.find_player(self)
-    self.direction = "right" -- TODO Create a player object and add this to their state
-    self.items = { } -- TODO Create a player object and add this to their state
+    self = level_model.find_people(self, self.raw_data)
 
     -- ######################
     -- # UPDATING FUNCTIONS #
@@ -22,20 +20,22 @@ function level_model.new(name)
         local ly = self.dimensions.y
         local lx = self.dimensions.x
 
-        -- Turning actions into side effects
-        dx, dy = self.act_to_effect(act)
+        -- # Updating environment
+        -- TODO Add door object
+         
+        -- # Turning actions into side effects
+        -- ## Tries to walk
         if (act == "left") or (act == "right") or (act == "up") or (act == "down") then
-            self.direction = act
+            dx, dy = self.act_to_effect(act)
+            self.player.set_direction(act)
+            if self.is_in_bounds(x, y, dx, dy, lx, ly) and self.tabletop[y+dy][x+dx] == "floor" then
+                self.tabletop[y][x] = "floor"
+                self.tabletop[y+dy][x+dx] = "player"
+                self.player.walk(dx, dy)
+            end
+        -- ## Tries to pick something up
         elseif act == "space" or act == " " then
             self.pickup_item()
-        end
-
-        -- Applying changes if possible
-        if self.is_in_bounds(x, y, dx, dy, lx, ly) and self.tabletop[y+dy][x+dx] == "floor" then
-            self.tabletop[y][x] = "floor"
-            self.tabletop[y+dy][x+dx] = "player"
-            self.player.y = y + dy
-            self.player.x = x + dx
         end
 
         return self
@@ -63,11 +63,13 @@ function level_model.new(name)
         local dy = 0
         local x = self.player.x
         local y = self.player.y
+        local item = " "
 
-        dx, dy = self.act_to_effect(self.direction)
+        dx, dy = self.act_to_effect(self.player.direction)
         if self.is_in_bounds(x, y, dx, dy, self.dimensions.x, self.dimensions.y) then
-            if self.tabletop[y+dy][x+dx] == "item" then
-                table.insert(self.items, "item")
+            item = self.tabletop[y+dy][x+dx]
+            if item == "item" then
+                self.player.give_item(item)
                 self.tabletop[y+dy][x+dx] = "floor"
             end
         end
@@ -117,7 +119,7 @@ function level_model.load(name)
     raw = fh:read("*line")
     while raw ~= "..." do
         stuff = util.split(raw, ":")
-        table.insert(outlet, { stuff[1], stuff[2] } )
+        table.insert(outlet, { stuff[1], stuff[2] })
         raw = fh:read("*line")
     end
 
@@ -125,14 +127,13 @@ function level_model.load(name)
     return outlet
 end
 
-function level_model.parse(raw)
+function level_model.parse(self, raw)
     local tabletop = { }
     local line = { }
     local dx = 0
     local dy = 0
 
     -- Get dimensions
-    -- TODO Discover why this is not working
     for _, box in pairs(raw) do
         if box[1] == "x" then
             dx = tonumber(box[2])
@@ -140,6 +141,8 @@ function level_model.parse(raw)
             dy = tonumber(box[2])
         end
     end
+    
+    -- Creating tabletop with provided dimensions
     for _ = 1, dy do
         line = { }
         for _ = 1, dx do
@@ -151,13 +154,13 @@ function level_model.parse(raw)
     -- Place stuff
     for _, box in pairs(raw) do
         if (box[1] ~= "x") and (box[1] ~= "y") then
-            print(box[1])
             -- parse location
             line = util.split(box[2], " ")
             dx = tonumber(line[1])
             dy = tonumber(line[2])
             -- store thing in memory
             tabletop[dy][dx] = box[1]
+            -- TODO Parse particular entities, like player and person
         end
     end
 
@@ -171,19 +174,20 @@ function level_model.find_dimensions(self)
     return dimensions
 end
 
-function level_model.find_player(self)
-    local player = { }
-
-    for j, line in ipairs(self.tabletop) do
-        for i, it in ipairs(line) do
-            if it == "player" then
-                player.x = i
-                player.y = j
-            end
+--- Discovers where there are people on raw data
+function level_model.find_people(self, raw)
+    self.player = { }
+    self.people = { }
+    
+    for _, box in pairs(raw) do
+        if box[1] == "player"  then
+            self.player = player_model.new(box[2])
+        elseif box[1] == "person" then
+            table.insert(self.people, player_model.new(box[2]))
         end
     end
-
-    return player
+    
+    return self
 end
 
 return level_model

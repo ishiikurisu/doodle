@@ -2,10 +2,10 @@ local level_model = require "level_model"
 local level_view = require "level_view"
 local level_controller = { }
 
-function level_controller.new()
+function level_controller.new(inlet)
     local self = { }
     self.actions = { }
-    self.level = level_model.new("level")
+    self.level = level_model.new(inlet)
     self.view = level_view.new()
 
     -- UPDATE FUNCTIONS
