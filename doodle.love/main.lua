@@ -1,7 +1,12 @@
 local lc = require "level_controller"
 
 function love.load()
+    love.window.setTitle("Example stuff")
     controller = lc.new()
+end
+
+function love.keyreleased(key)
+    controller.push(key)
 end
 
 function love.update()
