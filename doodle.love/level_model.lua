@@ -9,8 +9,9 @@ function level_model.new(name)
     self.raw_data = level_model.load(name)
     self.tabletop = level_model.parse(self, self.raw_data)
     self.dimensions = level_model.find_dimensions(self)
-    self.last_moment = 0
     self = level_model.find_entities(self, self.raw_data)
+    self.last_moment = 0
+    self.last_place = nil
 
     -- ######################
     -- # UPDATING FUNCTIONS #
@@ -24,7 +25,7 @@ function level_model.new(name)
         local ly = self.dimensions.y
         local lx = self.dimensions.x
         local step = "wall"
-        
+
         for _, person in pairs(self.people) do
             if person.is_update_time(moment) then
                 x, y = person.x, person.y
@@ -39,11 +40,11 @@ function level_model.new(name)
                 end
             end
         end
-        
+
         self.last_moment = moment
         return self
     end
-    
+
     -- Turning actions into side effects
     self.update = function(act, moment)
         local x = self.player.x
@@ -55,7 +56,6 @@ function level_model.new(name)
         local step = "wall"
 
         -- Tries to walk
-        step = "wall"
         if (act == "left") or (act == "right") or (act == "up") or (act == "down") then
             x, y = self.player.x, self.player.y
             dx, dy = self.act_to_effect(act)
@@ -100,6 +100,8 @@ function level_model.new(name)
     end
 
     self.pickup_item = function()
+        local lx = self.dimensions.x
+        local ly = self.dimensions.y
         local dx = 0
         local dy = 0
         local x = self.player.x
@@ -107,7 +109,7 @@ function level_model.new(name)
         local item = " "
 
         dx, dy = self.act_to_effect(self.player.direction)
-        if self.is_in_bounds(x, y, dx, dy, self.dimensions.x, self.dimensions.y) then
+        if self.is_in_bounds(x, y, dx, dy, lx, ly) then
             item = self.tabletop[y+dy][x+dx]
             if item == "item" then
                 self.player.give_item(item)
@@ -127,16 +129,22 @@ function level_model.new(name)
 
         return fact
     end
-    
+
     self.walk_through_door = function(x, y)
         local level = self
-        
+
         for _, door in pairs(self.doors) do
             if (door.x == x) and (door.y == y) then
-                level = level_model.new(door.destiny)
+                if self.last_place == nil then
+                    level = level_model.new(door.destiny)
+                    level.last_place = self
+                else
+                    level = self.last_place
+                end
+
             end
-        end 
-        
+        end
+
         return level
     end
 
@@ -172,7 +180,7 @@ function level_model.load(name)
     raw = fh:read("*line")
     while raw ~= "..." do
         stuff = util.split(raw, ":")
-        table.insert(outlet, { util.chomp(stuff[1]), 
+        table.insert(outlet, { util.chomp(stuff[1]),
                                util.chomp(stuff[2]) })
         raw = fh:read("*line")
     end
@@ -195,7 +203,7 @@ function level_model.parse(self, raw)
             dy = tonumber(box[2])
         end
     end
-    
+
     -- Creating tabletop with provided dimensions
     for _ = 1, dy do
         line = { }
@@ -232,7 +240,7 @@ function level_model.find_entities(self, raw)
     self.player = { }
     self.people = { }
     self.doors = { }
-    
+
     for _, box in pairs(raw) do
         if box[1] == "player"  then
             self.player = player_model.new(box[2])
@@ -242,7 +250,7 @@ function level_model.find_entities(self, raw)
             table.insert(self.doors, door_model.new(box[2]))
         end
     end
-    
+
     return self
 end
 
