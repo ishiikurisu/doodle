@@ -3,6 +3,7 @@ local door_model = { }
 
 function door_model.new(inlet)
     local self = door_model.construct(inlet)
+    self.last_place = nil
     return self
 end
 

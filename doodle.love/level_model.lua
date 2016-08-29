@@ -134,14 +134,16 @@ function level_model.new(name)
         local level = self
 
         for _, door in pairs(self.doors) do
+            -- /!\ ACHTUNG This won't work if a place has more than one door
+            -- TODO Fix this bug
             if (door.x == x) and (door.y == y) then
                 if self.last_place == nil then
                     level = level_model.new(door.destiny)
-                    level.last_place = self
                 else
                     level = self.last_place
-                end
 
+                end
+                level.last_place = self
             end
         end
 
@@ -175,6 +177,7 @@ function level_model.load(name)
     local fh = io.open(path)
     local raw = fh:read("*line")
     local outlet = { }
+    local stuff = { }
 
     -- Reading and parsing every line
     raw = fh:read("*line")
