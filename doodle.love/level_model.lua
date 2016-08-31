@@ -27,6 +27,8 @@ function level_model.new(name)
         local lx = self.dimensions.x
         local step = "wall"
 
+        -- TODO make last places live too
+        
         for _, person in pairs(self.people) do
             if person.is_update_time(moment) then
                 x, y = person.x, person.y
