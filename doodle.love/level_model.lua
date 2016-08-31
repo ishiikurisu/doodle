@@ -6,12 +6,13 @@ local level_model = { }
 
 function level_model.new(name)
     local self = { }
+    self.tag = name
     self.raw_data = level_model.load(name)
     self.tabletop = level_model.parse(self, self.raw_data)
     self.dimensions = level_model.find_dimensions(self)
     self = level_model.find_entities(self, self.raw_data)
     self.last_moment = 0
-    self.last_place = nil
+    self.last_places = { }
 
     -- ######################
     -- # UPDATING FUNCTIONS #
@@ -67,8 +68,6 @@ function level_model.new(name)
                     self.tabletop[y+dy][x+dx] = "player"
                     self.player.walk(dx, dy)
                 elseif step == "door" then
-                    -- TODO store previous level data
-                    -- TODO make player appear out of a door
                     return self.walk_through_door(x+dx, y+dy)
                 end
             end
@@ -134,16 +133,13 @@ function level_model.new(name)
         local level = self
 
         for _, door in pairs(self.doors) do
-            -- /!\ ACHTUNG This won't work if a place has more than one door
-            -- TODO Fix this bug
             if (door.x == x) and (door.y == y) then
-                if self.last_place == nil then
+                if self.last_places[door.destiny] == nil then
                     level = level_model.new(door.destiny)
                 else
-                    level = self.last_place
-
+                    level = self.last_places[door.destiny]
                 end
-                level.last_place = self
+                level.last_places[self.tag] = self
             end
         end
 
