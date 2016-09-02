@@ -1,6 +1,7 @@
 local player_model = require "model/player_model"
 local person_model = require "model/person_model"
 local door_model = require "model/door_model"
+local goal_model = require "model/goal_model"
 local util = require "util"
 local level_model = { }
 
@@ -241,6 +242,7 @@ function level_model.find_entities(self, raw)
     self.player = { }
     self.people = { }
     self.doors = { }
+    self.goal = nil
 
     for _, box in pairs(raw) do
         if box[1] == "player"  then
@@ -249,6 +251,8 @@ function level_model.find_entities(self, raw)
             table.insert(self.people, person_model.new(box[2]))
         elseif box[1] == "door" then
             table.insert(self.doors, door_model.new(box[2]))
+        elseif box[1] == "goal" then
+            self.goal = goal_model.new(box[2])
         end
     end
 
