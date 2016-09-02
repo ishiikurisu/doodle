@@ -28,7 +28,7 @@ function level_view.new()
                 elseif it == "door" then
                     love.graphics.setColor(157, 120, 76)
                 elseif it == "goal" then
-                    love.graphics.setColor(157, 120, 76)
+                    love.graphics.setColor(254, 221, 0)
                 else -- floor
                     love.graphics.setColor(248, 247, 240)
                 end
