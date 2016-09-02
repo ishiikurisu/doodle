@@ -1,3 +1,4 @@
+local gameover_controller = require "controller/gameover_controller"
 local level_model = require "model/level_model"
 local level_view = require "view/level_view"
 local level_controller = { }
@@ -17,11 +18,11 @@ function level_controller.new(inlet)
 
     self.update = function(love)
         local moment = love.timer.getTime() - self.born
-        
+
         if self.level.game_over == true then
-            return start.new()
+            return gameover_controller.new()
         end
-        
+
         self.level = self.level.live(moment)
         for _, action in pairs(self.actions) do
             if action == "escape" then
