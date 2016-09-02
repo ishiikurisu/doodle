@@ -18,6 +18,10 @@ function level_controller.new(inlet)
     self.update = function(love)
         local moment = love.timer.getTime() - self.born
         
+        if self.level.game_over == true then
+            return start.new()
+        end
+        
         self.level = self.level.live(moment)
         for _, action in pairs(self.actions) do
             if action == "escape" then
@@ -30,7 +34,7 @@ function level_controller.new(inlet)
         return self
     end
 
-    -- DRAWING FUNCTIONS
+    -- DRAW FUNCTIONS
     self.draw = function(love)
         love.graphics.print(self.level.draw())
         self.view.draw(love, self.level.tabletop)

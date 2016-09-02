@@ -7,7 +7,7 @@ function goal_model.construct(inlet)
     
     self.x = tonumber(data[1])
     self.y = tonumber(data[2])
-    self.required_itens = tonumber(data[3])
+    self.required_items = tonumber(data[3])
     
     return self
 end

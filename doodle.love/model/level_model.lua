@@ -14,6 +14,7 @@ function level_model.new(name)
     self = level_model.find_entities(self, self.raw_data)
     self.last_moment = 0
     self.last_places = { }
+    self.game_over = false
 
     -- ######################
     -- # UPDATING FUNCTIONS #
@@ -72,11 +73,15 @@ function level_model.new(name)
                     self.player.walk(dx, dy)
                 elseif step == "door" then
                     return self.walk_through_door(x+dx, y+dy)
+                elseif step == "goal" then
+                    self = self.reach_goal()
                 end
             end
         -- Tries to pick something up
         elseif act == "space" or act == " " then
             self.pickup_item()
+        elseif act == "s" then
+            print(self.player.count_items())
         end
 
         -- Update structure
@@ -143,10 +148,18 @@ function level_model.new(name)
                     level = self.last_places[door.destiny]
                 end
                 level.last_places[self.tag] = self
+                level.player.items = self.player.items
             end
         end
 
         return level
+    end
+    
+    self.reach_goal = function()
+        if self.goal.required_itens == self.player.count_items() then
+            self.game_over = true
+        end
+        return self
     end
 
     -- #####################

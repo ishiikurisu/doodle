@@ -5,9 +5,9 @@ function player_model.new(inlet)
     local self = { }
     self = player_model.parse(self, inlet)
 
-    -- ######################
-    -- # UPDATING FUNCTIONS #
-    -- ######################
+    -- ####################
+    -- # UPDATE FUNCTIONS #
+    -- ####################
     self.is_update_time = function(moment)
         local fact = false
         local wait = moment - self.last_moment

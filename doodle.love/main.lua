@@ -1,5 +1,5 @@
 local util = require "util"
-local start = require "controller/mainmenu_controller"
+start = require "controller/mainmenu_controller"
 
 function love.load()
     love.window.setTitle("Example stuff")

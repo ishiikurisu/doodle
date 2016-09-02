@@ -19,6 +19,10 @@ function player_model.new(inlet)
     self.set_direction = function(direction)
         self.direction = direction
     end
+    
+    self.count_items = function()
+        return #self.items
+    end
 
     return self
 end
