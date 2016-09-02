@@ -1,5 +1,5 @@
-local level_model = require "level_model"
-local level_view = require "level_view"
+local level_model = require "model/level_model"
+local level_view = require "view/level_view"
 local level_controller = { }
 
 function level_controller.new(inlet)

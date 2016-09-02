@@ -1,5 +1,5 @@
 local util = require "util"
-local lc = require "level_controller"
+local lc = require "controller/level_controller"
 
 function love.load()
     love.window.setTitle("Example stuff")

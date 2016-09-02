@@ -1,6 +1,6 @@
-local player_model = require "player_model"
-local person_model = require "person_model"
-local door_model = require "door_model"
+local player_model = require "model/player_model"
+local person_model = require "model/person_model"
+local door_model = require "model/door_model"
 local util = require "util"
 local level_model = { }
 
