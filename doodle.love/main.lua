@@ -1,9 +1,9 @@
 local util = require "util"
-local lc = require "controller/level_controller"
+local start = require "controller/mainmenu_controller"
 
 function love.load()
     love.window.setTitle("Example stuff")
-    controller = lc.new("level")
+    controller = start.new()
     controller.born = love.timer.getTime()
 end
 
