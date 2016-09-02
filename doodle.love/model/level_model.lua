@@ -16,9 +16,17 @@ function level_model.new(name)
     self.last_places = { }
     self.game_over = false
 
-    -- ######################
-    -- # UPDATING FUNCTIONS #
-    -- ######################
+    -- ##################
+    -- # LOAD FUNCTIONS #
+    -- ##################
+    self.transfer = function(level)
+        self.player.items = level.player.items
+        return self
+    end
+    
+    -- ####################
+    -- # UPDATE FUNCTIONS #
+    -- ####################
     -- # Updating environment
     self.live = function(moment)
         local x = self.player.x
@@ -61,7 +69,7 @@ function level_model.new(name)
         local step = "wall"
 
         -- Tries to walk
-        if (act == "left") or (act == "right") or (act == "up") or (act == "down") then
+        if self.is_action(act) then
             x, y = self.player.x, self.player.y
             dx, dy = self.act_to_effect(act)
             self.player.set_direction(act)
@@ -80,13 +88,21 @@ function level_model.new(name)
         -- Tries to pick something up
         elseif act == "space" or act == " " then
             self.pickup_item()
-        elseif act == "s" then
-            print(self.player.count_items())
         end
 
         -- Update structure
         self.last_moment = moment
         return self
+    end
+    
+    self.is_action = function(act)
+        local fact = false
+        
+        if (act == "left") or (act == "right") or (act == "up") or (act == "down") then
+            fact = true
+        end
+        
+        return fact
     end
 
     self.act_to_effect = function(act)
@@ -148,7 +164,7 @@ function level_model.new(name)
                     level = self.last_places[door.destiny]
                 end
                 level.last_places[self.tag] = self
-                level.player.items = self.player.items
+                level.transfer(self)
             end
         end
 
@@ -156,9 +172,14 @@ function level_model.new(name)
     end
     
     self.reach_goal = function()
-        if self.goal.required_itens == self.player.count_items() then
+        local in_possession = self.player.count_items()
+        local required = self.goal.required_items
+        
+        -- TODO Add game over screen as a level object
+        if in_possession >= required then
             self.game_over = true
         end
+        
         return self
     end
 
@@ -168,7 +189,7 @@ function level_model.new(name)
     self.draw = function()
         local outlet = ""
 
-        for _, line in ipairs(self.tabletop) do
+        for _, line in pairs(self.tabletop) do
             for _, it in pairs(line) do
                 outlet = outlet .. it .. " "
             end
