@@ -23,7 +23,7 @@ function level_model.new(name)
         self.player.items = level.player.items
         return self
     end
-    
+
     -- ####################
     -- # UPDATE FUNCTIONS #
     -- ####################
@@ -38,7 +38,7 @@ function level_model.new(name)
         local step = "wall"
 
         -- TODO make last places live too
-        
+
         for _, person in pairs(self.people) do
             if person.is_update_time(moment) then
                 x, y = person.x, person.y
@@ -94,14 +94,14 @@ function level_model.new(name)
         self.last_moment = moment
         return self
     end
-    
+
     self.is_action = function(act)
         local fact = false
-        
+
         if (act == "left") or (act == "right") or (act == "up") or (act == "down") then
             fact = true
         end
-        
+
         return fact
     end
 
@@ -170,16 +170,16 @@ function level_model.new(name)
 
         return level
     end
-    
+
     self.reach_goal = function()
         local in_possession = self.player.count_items()
         local required = self.goal.required_items
-        
+
         -- TODO Add game over screen as a level object
         if in_possession >= required then
             self.game_over = true
         end
-        
+
         return self
     end
 
@@ -207,21 +207,22 @@ end
 -- #########################
 function level_model.load(name)
     local path = "assets/" .. name .. ".yml"
-    local fh = io.open(path)
-    local raw = fh:read("*line")
     local outlet = { }
     local stuff = { }
 
     -- Reading and parsing every line
-    raw = fh:read("*line")
-    while raw ~= "..." do
-        stuff = util.split(raw, ":")
-        table.insert(outlet, { util.chomp(stuff[1]),
-                               util.chomp(stuff[2]) })
-        raw = fh:read("*line")
+    for raw in love.filesystem.lines(path) do
+        if raw == "..." then
+            break
+        elseif raw == "---" then
+
+        else
+            stuff = util.split(raw, ":")
+            table.insert(outlet, { util.chomp(stuff[1]),
+                                   util.chomp(stuff[2]) })
+        end
     end
 
-    fh:close()
     return outlet
 end
 
