@@ -2,10 +2,9 @@ local level_view = { }
 
 function level_view.construct(love)
     local self = { }
-    local stuff = { "door", "floor", "goal", "item", "person", "player", "wall"  }
     self.sprites = { }
 
-    for _, it in pairs(stuff) do
+    for it in love.filesystem.lines("art/assets.txt") do
         self.sprites[it] = love.graphics.newImage("art/" .. it .. ".png")
     end
 

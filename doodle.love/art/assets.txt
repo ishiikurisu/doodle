@@ -1,0 +1,7 @@
+door
+floor
+goal
+item
+person
+player
+wall
