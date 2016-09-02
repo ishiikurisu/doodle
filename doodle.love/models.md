@@ -6,6 +6,7 @@ Currently, the following objects are available:
 - Player
 - Person
 - Item
+- Goal
 
 Wall
 ----
@@ -34,7 +35,7 @@ Item
 ----
 
 ```
-item:x y 
+item:x y
 ```
 
 Door
@@ -42,4 +43,11 @@ Door
 
 ```
 door: x y destiny
+```
+
+Goal
+----
+
+```
+goal: x y required_items
 ```
