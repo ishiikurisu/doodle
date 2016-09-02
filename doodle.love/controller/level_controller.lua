@@ -3,11 +3,11 @@ local level_model = require "model/level_model"
 local level_view = require "view/level_view"
 local level_controller = { }
 
-function level_controller.new(inlet)
+function level_controller.new(love, inlet)
     local self = { }
     self.actions = { }
     self.level = level_model.new(inlet)
-    self.view = level_view.new()
+    self.view = level_view.new(love)
     self.born = 0
 
     -- UPDATE FUNCTIONS
@@ -37,7 +37,7 @@ function level_controller.new(inlet)
 
     -- DRAW FUNCTIONS
     self.draw = function(love)
-        love.graphics.print(self.level.draw())
+        -- love.graphics.print(self.level.draw())
         self.view.draw(love, self.level.tabletop)
     end
 

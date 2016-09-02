@@ -1,7 +1,19 @@
 local level_view = { }
 
-function level_view.new()
+function level_view.construct(love)
     local self = { }
+    local stuff = { "door", "floor", "goal", "item", "person", "player", "wall"  }
+    self.sprites = { }
+
+    for _, it in pairs(stuff) do
+        self.sprites[it] = love.graphics.newImage("art/" .. it .. ".png")
+    end
+
+    return self
+end
+
+function level_view.new(love)
+    local self = level_view.construct(love)
 
     -- READING FUNCTIONS
     self.update = function(love)
@@ -10,33 +22,20 @@ function level_view.new()
 
     -- DRAWING FUNCTIONS
     self.draw = function(love, data)
-        local side = 50
-        local off = 100
-        local margin = 10
+        local side = 32
+        local margin = 50
 
         love.graphics.setBackgroundColor(0, 0, 0)
         for y, line in pairs(data) do
             for x, it in pairs(line) do
-                if it == "wall" then
-                    love.graphics.setColor(15, 16, 17)
-                elseif it == "player" then
-                    love.graphics.setColor(150, 58, 30)
-                elseif it == "person" then
-                    love.graphics.setColor(20, 159, 200)
-                elseif it == "item" then
-                    love.graphics.setColor(0, 171, 132)
-                elseif it == "door" then
-                    love.graphics.setColor(157, 120, 76)
-                elseif it == "goal" then
-                    love.graphics.setColor(254, 221, 0)
-                else -- floor
-                    love.graphics.setColor(248, 247, 240)
+                love.graphics.draw(self.sprites["floor"],
+                                   margin + x*side, margin + y*side,
+                                   0, 1, 1, 0, 0)
+                if it ~= "floor" then
+                    love.graphics.draw(self.sprites[it],
+                                       margin + x*side, margin + y*side,
+                                       0, 1, 1, 0, 0)
                 end
-                love.graphics.rectangle("fill",
-                                        off + x*side,
-                                        off + y*side,
-                                        side - margin,
-                                        side - margin)
             end
         end
     end
