@@ -18,4 +18,8 @@ function util.chomp(inlet)
     return string.gsub(it, "^%s+", "")
 end
 
+function util.pass()
+
+end
+
 return util

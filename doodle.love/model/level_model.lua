@@ -215,7 +215,7 @@ function level_model.load(name)
         if raw == "..." then
             break
         elseif raw == "---" then
-
+            util.pass()
         else
             stuff = util.split(raw, ":")
             table.insert(outlet, { util.chomp(stuff[1]),
