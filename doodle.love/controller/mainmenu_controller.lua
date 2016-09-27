@@ -25,8 +25,6 @@ function mainmenu_controller.new()
     end
 
     self.update = function(love)
-        local selected = "quit"
-
         for _, action in pairs(self.actions) do
             if action == "escape" then
                 love.event.quit()
@@ -39,7 +37,7 @@ function mainmenu_controller.new()
                     self.index = self.index - 1
                 end
             elseif action == "space" or action == " " then
-                selected = self.options[self.index]
+                local selected = self.options[self.index]
                 if selected == "new game" then
                     return level_controller.new(love, "level")
                 elseif selected == "load game" then
@@ -50,6 +48,7 @@ function mainmenu_controller.new()
             end
         end
 
+        self.actions = { }
         return self
     end
 
@@ -60,7 +59,7 @@ function mainmenu_controller.new()
         local data = { }
         local chosen = false
 
-        for i, option in ipairs(self.options) do
+        for i, option in pairs(self.options) do
             if self.index == i then
                 chosen = true
             else
