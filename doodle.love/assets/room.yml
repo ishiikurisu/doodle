@@ -5,4 +5,5 @@ player: 3 4
 item: 1 1
 door: 4 4 level
 person: 4 1 0
+door: 1 4 another_room
 ...
