@@ -1,4 +1,3 @@
-local util = require "util"
 local player_model = { }
 
 function player_model.new(inlet)
@@ -6,20 +5,20 @@ function player_model.new(inlet)
     self.x, self.y = player_model.parse(inlet)
     self.direction = "down"
     self.items = { }
-    
+
     self.walk = function(dx, dy)
         self.x = self.x + dx
         self.y = self.y + dy
     end
-    
+
     self.give_item = function(item)
         table.insert(self.items, item)
     end
-    
+
     self.set_direction = function(direction)
         self.direction = direction
     end
-    
+
     self.count_items = function()
         return #self.items
     end

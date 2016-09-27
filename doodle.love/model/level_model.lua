@@ -2,7 +2,6 @@ local player_model = require "model/player_model"
 local person_model = require "model/person_model"
 local door_model = require "model/door_model"
 local goal_model = require "model/goal_model"
-local util = require "util"
 local level_model = { }
 
 function level_model.new(name)

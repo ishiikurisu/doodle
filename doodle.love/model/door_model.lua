@@ -1,4 +1,3 @@
-local util = require "util"
 local door_model = { }
 
 function door_model.new(inlet)

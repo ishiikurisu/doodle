@@ -1,14 +1,13 @@
-local util = require "util"
 local goal_model = { }
 
 function goal_model.construct(inlet)
     local self = { }
     local data = util.split(inlet, " ")
-    
+
     self.x = tonumber(data[1])
     self.y = tonumber(data[2])
     self.required_items = tonumber(data[3])
-    
+
     return self
 end
 

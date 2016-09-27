@@ -1,4 +1,3 @@
-local util = require "util"
 local player_model = { }
 
 function player_model.new(inlet)

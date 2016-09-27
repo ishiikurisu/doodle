@@ -1,8 +1,8 @@
-local util = require "util"
+util = require "util"
 start = require "controller/mainmenu_controller"
 
 function love.load()
-    love.window.setTitle("Example stuff")
+    love.window.setTitle("Example stuff") -- TODO move this to conf.lua
     controller = start.new()
     controller.born = love.timer.getTime()
 end
