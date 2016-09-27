@@ -28,7 +28,7 @@ function level_controller.new(love, inlet)
             if action == "escape" then
                 love.event.quit()
             else
-                self.level = self.level.update(action, moment)
+                self.level = self.level.update(action, self.born)
             end
         end
 
