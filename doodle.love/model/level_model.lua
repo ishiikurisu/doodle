@@ -2,18 +2,121 @@ local player_model = require "model/player_model"
 local person_model = require "model/person_model"
 local door_model = require "model/door_model"
 local goal_model = require "model/goal_model"
+local box_model = require "model/box_model"
 local level_model = { }
 
-function level_model.new(name)
+-- ##########################
+-- # CONSTRUCTION FUNCTIONS #
+-- ##########################
+function level_model.construct(name)
     local self = { }
+
     self.tag = name
     self.raw_data = level_model.load(name)
     self.tabletop = level_model.parse(self, self.raw_data)
     self.dimensions = level_model.find_dimensions(self)
-    self = level_model.find_entities(self, self.raw_data)
     self.last_moment = 0
     self.last_places = { }
     self.game_over = false
+    self = level_model.find_entities(self, self.raw_data)
+
+    return self
+end
+
+function level_model.load(name)
+    local path = "assets/" .. name .. ".yml"
+    local outlet = { }
+    local stuff = { }
+
+    -- Reading and parsing every line
+    for raw in love.filesystem.lines(path) do
+        if raw == "..." then
+            break
+        elseif raw == "---" then
+
+        else
+            stuff = util.split(raw, ":")
+            table.insert(outlet, { util.chomp(stuff[1]),
+                                   util.chomp(stuff[2]) })
+        end
+    end
+
+    return outlet
+end
+
+function level_model.parse(self, raw)
+    local tabletop = { }
+    local line = { }
+    local dx = 0
+    local dy = 0
+
+    -- Get dimensions
+    for _, box in pairs(raw) do
+        if box[1] == "x" then
+            dx = tonumber(box[2])
+        elseif box[1] == "y" then
+            dy = tonumber(box[2])
+        end
+    end
+
+    -- Creating tabletop with provided dimensions
+    for _ = 1, dy do
+        line = { }
+        for _ = 1, dx do
+            table.insert(line, "floor")
+        end
+        table.insert(tabletop, line)
+    end
+
+    -- Place stuff
+    for _, box in pairs(raw) do
+        if (box[1] ~= "x") and (box[1] ~= "y") then
+            -- parse location
+            line = util.split(box[2], " ")
+            dx = tonumber(line[1])
+            dy = tonumber(line[2])
+            -- store thing in memory
+            tabletop[dy][dx] = box[1]
+        end
+    end
+
+    return tabletop
+end
+
+function level_model.find_dimensions(self)
+    local dimensions = { }
+    dimensions.y = #self.tabletop
+    dimensions.x = #(self.tabletop[1])
+    return dimensions
+end
+
+--- Discovers where there are people and objects on raw data
+function level_model.find_entities(self, raw)
+    self.player = { }
+    self.people = { }
+    self.doors = { }
+    self.goal = nil
+
+    for _, box in pairs(raw) do
+        if box[1] == "player"  then
+            self.player = player_model.new(box[2])
+        elseif box[1] == "person" then
+            table.insert(self.people, person_model.new(box[2]))
+        elseif box[1] == "door" then
+            table.insert(self.doors, door_model.new(box[2]))
+        elseif box[1] == "goal" then
+            self.goal = goal_model.new(box[2])
+        end
+    end
+
+    return self
+end
+
+-- ###################
+-- # CLASS FUNCTIONS #
+-- ###################
+function level_model.new(name)
+    local self = level_model.construct(name)
 
     -- ##################
     -- # LOAD FUNCTIONS #
@@ -196,98 +299,6 @@ function level_model.new(name)
         end
 
         return outlet
-    end
-
-    return self
-end
-
--- #########################
--- # CONSTRUCTOR FUNCTIONS #
--- #########################
-function level_model.load(name)
-    local path = "assets/" .. name .. ".yml"
-    local outlet = { }
-    local stuff = { }
-
-    -- Reading and parsing every line
-    for raw in love.filesystem.lines(path) do
-        if raw == "..." then
-            break
-        elseif raw == "---" then
-
-        else
-            stuff = util.split(raw, ":")
-            table.insert(outlet, { util.chomp(stuff[1]),
-                                   util.chomp(stuff[2]) })
-        end
-    end
-
-    return outlet
-end
-
-function level_model.parse(self, raw)
-    local tabletop = { }
-    local line = { }
-    local dx = 0
-    local dy = 0
-
-    -- Get dimensions
-    for _, box in pairs(raw) do
-        if box[1] == "x" then
-            dx = tonumber(box[2])
-        elseif box[1] == "y" then
-            dy = tonumber(box[2])
-        end
-    end
-
-    -- Creating tabletop with provided dimensions
-    for _ = 1, dy do
-        line = { }
-        for _ = 1, dx do
-            table.insert(line, "floor")
-        end
-        table.insert(tabletop, line)
-    end
-
-    -- Place stuff
-    for _, box in pairs(raw) do
-        if (box[1] ~= "x") and (box[1] ~= "y") then
-            -- parse location
-            line = util.split(box[2], " ")
-            dx = tonumber(line[1])
-            dy = tonumber(line[2])
-            -- store thing in memory
-            tabletop[dy][dx] = box[1]
-        end
-    end
-
-    return tabletop
-end
-
-function level_model.find_dimensions(self)
-    local dimensions = { }
-    dimensions.y = #self.tabletop
-    dimensions.x = #(self.tabletop[1])
-    return dimensions
-end
-
---- Discovers where there are people and objects on raw data
-function level_model.find_entities(self, raw)
-    self.player = { }
-    self.people = { }
-    self.doors = { }
-    self.goal = nil
-
-    for _, box in pairs(raw) do
-        if box[1] == "player"  then
-            self.player = player_model.new(box[2])
-        elseif box[1] == "person" then
-            table.insert(self.people, person_model.new(box[2]))
-        elseif box[1] == "door" then
-            table.insert(self.doors, door_model.new(box[2]))
-        elseif box[1] == "goal" then
-            self.goal = goal_model.new(box[2])
-        end
     end
 
     return self
