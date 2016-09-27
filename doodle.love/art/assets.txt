@@ -3,6 +3,9 @@ floor
 goal
 item
 person
-player
 wall
 box
+player_up
+player_down
+player_left
+player_right

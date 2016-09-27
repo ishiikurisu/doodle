@@ -38,7 +38,7 @@ function level_controller.new(love, inlet)
     -- DRAW FUNCTIONS
     self.draw = function(love)
         -- love.graphics.print(self.level.draw())
-        self.view.draw(love, self.level.tabletop)
+        self.view.draw(love, self.level.create_board())
     end
 
     return self

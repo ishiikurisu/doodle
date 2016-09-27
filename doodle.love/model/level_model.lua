@@ -287,7 +287,6 @@ function level_model.new(name)
         return self
     end
 
-    -- TODO Move box
     self.move_box = function(x, y, dx, dy, lx, ly)
         local step = "wall"
         local further_step = "wall"
@@ -296,16 +295,13 @@ function level_model.new(name)
         if self.is_in_bounds(x, y, dx, dy, lx, ly) and self.is_in_bounds(x, y, 2*dx, 2*dy, lx, ly) then
             step = self.tabletop[y+dy][x+dx]
             further_step = self.tabletop[y+2*dy][x+2*dx]
-        else
-            return self
-        end
-
-        -- Is it possible to walk?
-        if self.tabletop[y+2*dy][x+2*dx] == "floor" then
-            self.tabletop[y][x] = "floor"
-            self.tabletop[y+dy][x+dx] = "player"
-            self.tabletop[y+2*dy][x+2*dx] = "box"
-            self.player.walk(dx, dy)
+            -- Is it possible to walk?
+            if self.tabletop[y+2*dy][x+2*dx] == "floor" then
+                self.tabletop[y][x] = "floor"
+                self.tabletop[y+dy][x+dx] = "player"
+                self.tabletop[y+2*dy][x+2*dx] = "box"
+                self.player.walk(dx, dy)
+            end
         end
 
         return self
@@ -323,6 +319,15 @@ function level_model.new(name)
             end
             outlet = outlet .. "\n"
         end
+
+        return outlet
+    end
+
+    self.create_board = function()
+        local outlet = self.tabletop
+
+        -- TODO Ask sprite for each entity
+        outlet[self.player.y][self.player.x] = self.player.draw()
 
         return outlet
     end

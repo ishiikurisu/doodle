@@ -32,6 +32,10 @@ function player_model.new(inlet)
         return #self.items
     end
 
+    self.draw = function()
+        return "player_" .. self.direction
+    end
+
     return self
 end
 
