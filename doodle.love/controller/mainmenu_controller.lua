@@ -24,7 +24,7 @@ function mainmenu_controller.new()
         table.insert(self.actions, action)
     end
 
-    self.update = function(love)
+    self.update = function(love, dt)
         for _, action in pairs(self.actions) do
             if action == "escape" then
                 love.event.quit()

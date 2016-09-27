@@ -18,7 +18,7 @@ function gameover_controller.new()
         return self
     end
 
-    self.update = function(love)
+    self.update = function(love, dt)
         for _, action in pairs(self.actions) do
             if action == "space" or action == " " then
                 return start.new()

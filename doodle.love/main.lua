@@ -4,15 +4,14 @@ start = require "controller/mainmenu_controller"
 function love.load()
     love.window.setTitle("Example stuff") -- TODO move this to conf.lua
     controller = start.new()
-    controller.born = love.timer.getTime()
 end
 
 function love.keyreleased(key)
     controller.push(key)
 end
 
-function love.update()
-    controller = controller.update(love)
+function love.update(dt)
+    controller = controller.update(love, dt)
 end
 
 function love.draw()

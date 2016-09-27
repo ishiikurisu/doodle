@@ -16,14 +16,14 @@ function level_controller.new(love, inlet)
         return self
     end
 
-    self.update = function(love)
-        local moment = love.timer.getTime() - self.born
+    self.update = function(love, dt)
+        self.born = self.born + dt
 
         if self.level.game_over == true then
             return gameover_controller.new()
         end
 
-        self.level = self.level.live(moment)
+        self.level = self.level.live(self.born)
         for _, action in pairs(self.actions) do
             if action == "escape" then
                 love.event.quit()
@@ -31,6 +31,7 @@ function level_controller.new(love, inlet)
                 self.level = self.level.update(action, moment)
             end
         end
+
         self.actions = { }
         return self
     end

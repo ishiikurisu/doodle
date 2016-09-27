@@ -18,6 +18,10 @@ function level_model.construct(name)
     self.last_moment = 0
     self.last_places = { }
     self.game_over = false
+    self.player = { }
+    self.people = { }
+    self.doors = { }
+    self.goal = nil
     self = level_model.find_entities(self, self.raw_data)
 
     return self
