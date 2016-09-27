@@ -1,10 +1,19 @@
 local player_model = { }
 
-function player_model.new(inlet)
+function player_model.construct(inlet)
     local self = { }
-    self.x, self.y = player_model.parse(inlet)
+    local data = util.split(inlet, " ")
+
+    self.x = tonumber(data[1])
+    self.y = tonumber(data[2])
     self.direction = "down"
     self.items = { }
+
+    return self
+end
+
+function player_model.new(inlet)
+    local self = player_model.construct(inlet)
 
     self.walk = function(dx, dy)
         self.x = self.x + dx
@@ -24,13 +33,6 @@ function player_model.new(inlet)
     end
 
     return self
-end
-
-function player_model.parse(inlet)
-    local data = util.split(inlet, " ")
-    local x = tonumber(data[1])
-    local y = tonumber(data[2])
-    return x, y
 end
 
 return player_model
