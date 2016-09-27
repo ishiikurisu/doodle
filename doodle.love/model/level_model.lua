@@ -185,6 +185,8 @@ function level_model.new(name)
                     return self.walk_through_door(x+dx, y+dy)
                 elseif step == "goal" then
                     self = self.reach_goal()
+                elseif step == "box" then
+                    self.move_box(x, y, dx, dy, lx, ly)
                 end
             end
         -- Tries to pick something up
@@ -280,6 +282,30 @@ function level_model.new(name)
         -- TODO Add game over screen as a level object
         if in_possession >= required then
             self.game_over = true
+        end
+
+        return self
+    end
+
+    -- TODO Move box
+    self.move_box = function(x, y, dx, dy, lx, ly)
+        local step = "wall"
+        local further_step = "wall"
+
+        -- Is it within boundaries?
+        if self.is_in_bounds(x, y, dx, dy, lx, ly) and self.is_in_bounds(x, y, 2*dx, 2*dy, lx, ly) then
+            step = self.tabletop[y+dy][x+dx]
+            further_step = self.tabletop[y+2*dy][x+2*dx]
+        else
+            return self
+        end
+
+        -- Is it possible to walk?
+        if self.tabletop[y+2*dy][x+2*dx] == "floor" then
+            self.tabletop[y][x] = "floor"
+            self.tabletop[y+dy][x+dx] = "player"
+            self.tabletop[y+2*dy][x+2*dx] = "box"
+            self.player.walk(dx, dy)
         end
 
         return self
