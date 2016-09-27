@@ -5,3 +5,4 @@ item
 person
 player
 wall
+box
