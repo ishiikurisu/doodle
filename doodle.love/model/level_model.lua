@@ -22,6 +22,7 @@ function level_model.construct(name)
     self.people = { }
     self.doors = { }
     self.goal = nil
+    self.next_level = nil
     self = level_model.find_entities(self, self.raw_data)
 
     return self
@@ -110,6 +111,7 @@ function level_model.find_entities(self, raw)
             table.insert(self.doors, door_model.new(box[2]))
         elseif box[1] == "goal" then
             self.goal = goal_model.new(box[2])
+            self.next_level = self.goal.next_level
         end
     end
 

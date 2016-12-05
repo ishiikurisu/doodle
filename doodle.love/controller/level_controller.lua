@@ -20,6 +20,9 @@ function level_controller.new(love, inlet)
         self.born = self.born + dt
 
         if self.level.game_over == true then
+            if self.level.next_level ~= nil then
+                return level_controller.new(love, self.level.next_level)
+            end
             return gameover_controller.new()
         end
 
