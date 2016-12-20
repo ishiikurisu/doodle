@@ -20,7 +20,6 @@ function level_controller.new(love, inlet)
         self.born = self.born + dt
 
         if self.level.game_over == true then
-<<<<<<< HEAD
             local next_level = self.level.next_level
             local next_controller = gameover_controller.new()
 
@@ -29,12 +28,6 @@ function level_controller.new(love, inlet)
             end
 
             return next_controller
-=======
-            if self.level.next_level ~= nil then
-                return level_controller.new(love, self.level.next_level)
-            end
-            return gameover_controller.new()
->>>>>>> 5479705777df91d3dd05e23d80e6dfd45ca5a8c2
         end
 
         self.level = self.level.live(self.born)
