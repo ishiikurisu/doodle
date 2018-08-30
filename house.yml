@@ -1,0 +1,4 @@
+execute:
+    local: true
+    commands:
+    - love doodle.love

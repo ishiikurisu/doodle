@@ -1,6 +1,0 @@
-{
-    "build": {
-        "local": true,
-        "command": "love doodle.love"
-    }
-}
