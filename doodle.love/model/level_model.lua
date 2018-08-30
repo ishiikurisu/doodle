@@ -26,7 +26,6 @@ function level_model:new(name)
     m.goal = nil
     m.next_level = nil
     m:find_entities()
-
     return m
 end
 

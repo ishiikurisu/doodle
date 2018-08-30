@@ -3,7 +3,7 @@ gameover_view.__index = gameover_view
 
 function gameover_view:new()
     local v = {}
-    setmetatable(v, game_over)
+    setmetatable(v, gameover_view)
     return v
 end
 

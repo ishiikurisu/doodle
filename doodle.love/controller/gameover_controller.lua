@@ -1,13 +1,12 @@
 local gameover_view = require "view/gameover_view"
-local gameover_controller = {
-    actions = { },
-    view = gameover_view:new()
-}
+local gameover_controller = { }
 gameover_controller.__index  = gameover_controller
 
-function gameover_controller:new(c)
-    c = c or {}
+function gameover_controller:new()
+    local c = { }
     setmetatable(c, gameover_controller)
+    c.actions = { }
+    c.view = gameover_view:new()
     return c
 end
 

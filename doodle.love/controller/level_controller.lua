@@ -26,8 +26,8 @@ function level_controller:update(dt)
         local next_level = self.level.next_level
         local next_controller = gameover_controller:new()
 
-        if next_level ~= nil then
-            next_controller = level_controller:new(love, next_level)
+        if next_level ~= nil and #next_level > 0 then
+            next_controller = level_controller:new(next_level)
         end
 
         return next_controller
