@@ -7,10 +7,6 @@ function mainmenu_view:new()
     return v
 end
 
-function mainmenu_view:update()
-    return { }
-end
-
 function mainmenu_view:draw(data)
     local side = 50
     local chosen = false

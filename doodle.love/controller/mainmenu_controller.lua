@@ -1,18 +1,17 @@
 local level_controller = require "controller/level_controller"
 local mainmenu_view = require "view/mainmenu_view"
-local mainmenu_controller = {
-    born = 0,
-    actions = { },
-    view = mainmenu_view:new(),
-    index = 0,
-    options = { "new game", "load game", "quit" }
-}
+local mainmenu_controller = { }
+mainmenu_controller.__index = mainmenu_controller
 
-function mainmenu_controller:new(o)
-    o = o or {}
-    setmetatable(o, self)
-    self.__index = self
-    return o
+function mainmenu_controller:new()
+    local c = { }
+    setmetatable(c, mainmenu_controller)
+    c.born = 0
+    c.actions = { }
+    c.view = mainmenu_view:new()
+    c.index = 1
+    c.options = { "new game", "load game", "quit" }
+    return c
 end
 
 function mainmenu_controller:push(action)
@@ -60,7 +59,7 @@ function mainmenu_controller:draw()
         table.insert(data, { chosen = chosen, option = option })
     end
 
-    self.view:draw(love, data)
+    self.view:draw(data)
 end
 
 return mainmenu_controller
