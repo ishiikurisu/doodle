@@ -12,8 +12,8 @@ level_controller.__index = level_controller
 function level_controller:new(inlet)
     local c = { }
     setmetatable(c, level_controller)
-    c.level = level_model.new(inlet)
-    c.view = level_view.new(love)
+    c.level = level_model:new(inlet)
+    c.view = level_view:new(love)
     return c
 end
 
@@ -36,12 +36,12 @@ function level_controller:update(dt)
         return next_controller
     end
 
-    self.level = self.level.live(self.born)
+    self.level = self.level:live(self.born)
     for _, action in pairs(self.actions) do
         if action == "escape" then
             love.event.quit()
         else
-            self.level = self.level.update(action, self.born)
+            self.level = self.level:update(action, self.born)
         end
     end
 
@@ -52,7 +52,7 @@ end
 -- DRAW FUNCTIONS
 function level_controller:draw()
     -- love.graphics.print(self.level.draw())
-    self.view.draw(love, self.level.create_board())
+    self.view.draw(love, self.level:create_board())
 end
 
 return level_controller

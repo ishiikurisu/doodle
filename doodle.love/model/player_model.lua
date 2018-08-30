@@ -1,42 +1,43 @@
-local player_model = { }
+local player_model = {
+    x = 0,
+    y = 0,
+    direction = "down",
+    items = { }
+}
+player_model.__index = player_model
 
-function player_model.construct(inlet)
-    local self = { }
+function player_model:new(inlet)
+    local m = { }
     local data = util.split(inlet, " ")
+    setmetatable(m, player_model)
 
-    self.x = tonumber(data[1])
-    self.y = tonumber(data[2])
-    self.direction = "down"
-    self.items = { }
+    m.x = tonumber(data[1])
+    m.y = tonumber(data[2])
+    m.direction = "down"
+    m.items = { }
 
-    return self
+    return m
 end
 
-function player_model.new(inlet)
-    local self = player_model.construct(inlet)
+function player_model:walk(dx, dy)
+    self.x = self.x + dx
+    self.y = self.y + dy
+end
 
-    self.walk = function(dx, dy)
-        self.x = self.x + dx
-        self.y = self.y + dy
-    end
+function player_model:give_item(item)
+    table.insert(self.items, item)
+end
 
-    self.give_item = function(item)
-        table.insert(self.items, item)
-    end
+function player_model:set_direction(direction)
+    self.direction = direction
+end
 
-    self.set_direction = function(direction)
-        self.direction = direction
-    end
+function player_model:count_items()
+    return #self.items
+end
 
-    self.count_items = function()
-        return #self.items
-    end
-
-    self.draw = function()
-        return "player_" .. self.direction
-    end
-
-    return self
+function player_model:draw()
+    return "player_" .. self.direction
 end
 
 return player_model

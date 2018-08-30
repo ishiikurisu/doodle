@@ -1,39 +1,34 @@
 local gameover_view = require "view/gameover_view"
-local gameover_controller = { }
+local gameover_controller = {
+    actions = { },
+    view = gameover_view:new()
+}
+gameover_controller.__index  = gameover_controller
 
-function gameover_controller.construct()
-    local self = { }
+function gameover_controller:new(c)
+    c = c or {}
+    setmetatable(c, gameover_controller)
+    return c
+end
 
-    self.actions = { }
-    self.view = gameover_view.new()
-
+function gameover_controller:push(action)
+    table.insert(self.actions, action)
     return self
 end
 
-function gameover_controller.new()
-    local self = gameover_controller.construct()
-
-    self.push = function(action)
-        table.insert(self.actions, action)
-        return self
-    end
-
-    self.update = function(love, dt)
-        for _, action in pairs(self.actions) do
-            if action == "space" or action == " " then
-                return start.new()
-            end
+function gameover_controller:update(dt)
+    for _, action in pairs(self.actions) do
+        if action == "space" or action == " " then
+            return start:new()
         end
-
-        self.actions = { }
-        return self
     end
 
-    self.draw = function(love)
-        self.view.draw(love)
-    end
-
+    self.actions = { }
     return self
+end
+
+function gameover_controller:draw()
+    self.view:draw()
 end
 
 return gameover_controller

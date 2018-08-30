@@ -60,7 +60,7 @@ function mainmenu_controller:draw()
         table.insert(data, { chosen = chosen, option = option })
     end
 
-    self.view.draw(love, data)
+    self.view:draw(love, data)
 end
 
 return mainmenu_controller
