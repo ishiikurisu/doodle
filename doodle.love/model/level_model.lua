@@ -77,11 +77,9 @@ function level_model.parse(raw)
     -- Place stuff
     for _, box in pairs(raw) do
         if (box[1] ~= "x") and (box[1] ~= "y") then
-            -- parse location
             line = util.split(box[2], " ")
             dx = tonumber(line[1])
             dy = tonumber(line[2])
-            -- store thing in memory
             tabletop[dy][dx] = box[1]
         end
     end
@@ -283,7 +281,6 @@ function level_model:reach_goal()
     local in_possession = self.player:count_items()
     local required = self.goal.required_items
 
-    -- TODO Add game over screen as a level object
     if in_possession >= required then
         self.game_over = true
     end
@@ -292,13 +289,8 @@ function level_model:reach_goal()
 end
 
 function level_model:move_box(x, y, dx, dy, lx, ly)
-    local step = "wall"
-    local further_step = "wall"
-
     -- Is it within boundaries?
     if self:is_in_bounds(x, y, dx, dy, lx, ly) and self:is_in_bounds(x, y, 2*dx, 2*dy, lx, ly) then
-        step = self.tabletop[y+dy][x+dx]
-        further_step = self.tabletop[y+2*dy][x+2*dx]
         -- Is it possible to walk?
         if self.tabletop[y+2*dy][x+2*dx] == "floor" then
             self.tabletop[y][x] = "floor"

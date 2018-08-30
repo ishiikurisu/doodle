@@ -21,29 +21,26 @@ end
 
 function level_controller:update(dt)
     self.born = self.born + dt
+    local next_controller = self
 
     if self.level.game_over == true then
         local next_level = self.level.next_level
-        local next_controller = gameover_controller:new()
-
         if next_level ~= nil and #next_level > 0 then
             next_controller = level_controller:new(next_level)
         end
-
-        return next_controller
-    end
-
-    self.level:live(self.born)
-    for _, action in pairs(self.actions) do
-        if action == "escape" then
-            love.event.quit()
-        else
-            self.level = self.level:update(action, self.born)
+    else
+        next_controller.level:live(self.born)
+        for _, action in pairs(next_controller.actions) do
+            if action == "escape" then
+                love.event.quit()
+            else
+                next_controller.level = self.level:update(action, self.born)
+            end
         end
+        next_controller.actions = { }
     end
 
-    self.actions = { }
-    return self
+    return next_controller
 end
 
 -- DRAW FUNCTIONS
