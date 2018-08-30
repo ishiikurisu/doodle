@@ -3,7 +3,7 @@ local mainmenu_view = require "view/mainmenu_view"
 local mainmenu_controller = {
     born = 0,
     actions = { },
-    view = mainmenu_view.new(),
+    view = mainmenu_view:new(),
     index = 0,
     options = { "new game", "load game", "quit" }
 }
@@ -34,9 +34,9 @@ function mainmenu_controller:update(dt)
         elseif action == "space" or action == " " then
             local selected = self.options[self.index]
             if selected == "new game" then
-                return level_controller.new(love, "level")
+                return level_controller:new("level")
             elseif selected == "load game" then
-                return level_controller.new(love, "level")
+                return level_controller:new("level")
             else -- quit
                 love.event.quit()
             end
