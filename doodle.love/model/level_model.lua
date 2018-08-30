@@ -296,7 +296,7 @@ function level_model:move_box(x, y, dx, dy, lx, ly)
     local further_step = "wall"
 
     -- Is it within boundaries?
-    if self.is_in_bounds(x, y, dx, dy, lx, ly) and self.is_in_bounds(x, y, 2*dx, 2*dy, lx, ly) then
+    if self:is_in_bounds(x, y, dx, dy, lx, ly) and self:is_in_bounds(x, y, 2*dx, 2*dy, lx, ly) then
         step = self.tabletop[y+dy][x+dx]
         further_step = self.tabletop[y+2*dy][x+2*dx]
         -- Is it possible to walk?
