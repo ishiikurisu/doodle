@@ -148,7 +148,7 @@ function level_model:live(moment)
     for _, person in pairs(self.people) do
         if person:is_update_time(moment) then
             x, y = person.x, person.y
-            dx, dy = self:act_to_effect(person.get_direction())
+            dx, dy = self:act_to_effect(person:get_direction())
             if self:is_in_bounds(x, y, dx, dy, lx, ly) then
                 step = self.tabletop[y+dy][x+dx]
                 if step == "floor" then
@@ -261,7 +261,6 @@ function level_model:is_in_bounds(x, y, dx, dy, lx, ly)
     return fact
 end
 
--- BUG I think this function is not working
 function level_model:walk_through_door(x, y)
     local level = self
 

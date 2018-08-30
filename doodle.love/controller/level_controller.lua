@@ -38,7 +38,7 @@ function level_controller:update(dt)
         if action == "escape" then
             love.event.quit()
         else
-            self.level:update(action, self.born)
+            self.level = self.level:update(action, self.born)
         end
     end
 
