@@ -1,9 +1,4 @@
-local door_model = {
-    last_place = nil,
-    x = 0,
-    y = 0,
-    destiny = ""
-}
+local door_model = { }
 door_model.__index = door_model
 
 function door_model:new(inlet)

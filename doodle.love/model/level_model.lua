@@ -3,20 +3,7 @@ local person_model = require "model/person_model"
 local door_model = require "model/door_model"
 local goal_model = require "model/goal_model"
 local box_model = require "model/box_model"
-local level_model = {
-    tag = "",
-    raw_data = "",
-    tabletop = nil,
-    dimensions = nil,
-    last_moment = 0,
-    last_places = { },
-    game_over = false,
-    player = { },
-    people = { },
-    doors = { },
-    goal = nil,
-    next_level = nil
-}
+local level_model = { }
 level_model.__index = level_model
 
 -- ##########################
@@ -25,21 +12,22 @@ level_model.__index = level_model
 function level_model:new(name)
     local m = { }
 
-    self.tag = name
-    self.raw_data = level_model.load(name)
-    self.tabletop = level_model.parse(self, self.raw_data)
-    self.dimensions = level_model.find_dimensions(self)
-    self.last_moment = 0
-    self.last_places = { }
-    self.game_over = false
-    self.player = { }
-    self.people = { }
-    self.doors = { }
-    self.goal = nil
-    self.next_level = nil
-    self = level_model.find_entities(self, self.raw_data)
+    setmetatable(m, level_model)
+    m.tag = name
+    m.raw_data = level_model.load(name)
+    m.tabletop = level_model.parse(m.raw_data)
+    m.dimensions = level_model.find_dimensions(m)
+    m.last_moment = 0
+    m.last_places = { }
+    m.game_over = false
+    m.player = { }
+    m.people = { }
+    m.doors = { }
+    m.goal = nil
+    m.next_level = nil
+    m:find_entities()
 
-    return self
+    return m
 end
 
 function level_model.load(name)
@@ -63,7 +51,7 @@ function level_model.load(name)
     return outlet
 end
 
-function level_model.parse(self, raw)
+function level_model.parse(raw)
     local tabletop = { }
     local line = { }
     local dx = 0
@@ -102,15 +90,16 @@ function level_model.parse(self, raw)
     return tabletop
 end
 
-function level_model.find_dimensions(self)
+function level_model.find_dimensions(model)
     local dimensions = { }
-    dimensions.y = #self.tabletop
-    dimensions.x = #(self.tabletop[1])
+    dimensions.y = #model.tabletop
+    dimensions.x = #(model.tabletop[1])
     return dimensions
 end
 
 --- Discovers where there are people and objects on raw data
-function level_model.find_entities(self, raw)
+function level_model:find_entities()
+    local raw = self.raw_data
     self.player = { }
     self.people = { }
     self.doors = { }
@@ -118,13 +107,13 @@ function level_model.find_entities(self, raw)
 
     for _, box in pairs(raw) do
         if box[1] == "player"  then
-            self.player = player_model.new(box[2])
+            self.player = player_model:new(box[2])
         elseif box[1] == "person" then
-            table.insert(self.people, person_model.new(box[2]))
+            table.insert(self.people, person_model:new(box[2]))
         elseif box[1] == "door" then
-            table.insert(self.doors, door_model.new(box[2]))
+            table.insert(self.doors, door_model:new(box[2]))
         elseif box[1] == "goal" then
-            self.goal = goal_model.new(box[2])
+            self.goal = goal_model:new(box[2])
             self.next_level = self.goal.next_level
         end
     end
@@ -139,7 +128,7 @@ end
 -- ## LOAD FUNCTIONS ##
 function level_model:transfer(level)
     self.player.items = level.player.items
-    return self
+    return level
 end
 
 -- ####################
@@ -187,7 +176,7 @@ function level_model:update(act, moment)
     local step = "wall"
 
     -- Tries to walk
-    if self.is_action(act) then
+    if self:is_action(act) then
         x, y = self.player.x, self.player.y
         dx, dy = self:act_to_effect(act)
         self.player:set_direction(act)
@@ -273,6 +262,7 @@ function level_model:is_in_bounds(x, y, dx, dy, lx, ly)
     return fact
 end
 
+-- BUG I think this function is not working
 function level_model:walk_through_door(x, y)
     local level = self
 

@@ -1,19 +1,16 @@
 local gameover_controller = require "controller/gameover_controller"
 local level_model = require "model/level_model"
 local level_view = require "view/level_view"
-local level_controller = {
-    actions = { },
-    level = nil,
-    view = nil,
-    born = 0
-}
+local level_controller = { }
 level_controller.__index = level_controller
 
 function level_controller:new(inlet)
     local c = { }
     setmetatable(c, level_controller)
+    c.actions = { }
+    c.born = 0
     c.level = level_model:new(inlet)
-    c.view = level_view:new(love)
+    c.view = level_view:new()
     return c
 end
 
@@ -36,12 +33,12 @@ function level_controller:update(dt)
         return next_controller
     end
 
-    self.level = self.level:live(self.born)
+    self.level:live(self.born)
     for _, action in pairs(self.actions) do
         if action == "escape" then
             love.event.quit()
         else
-            self.level = self.level:update(action, self.born)
+            self.level:update(action, self.born)
         end
     end
 
@@ -51,8 +48,8 @@ end
 
 -- DRAW FUNCTIONS
 function level_controller:draw()
-    -- love.graphics.print(self.level.draw())
-    self.view.draw(love, self.level:create_board())
+    -- love.graphics.print(self.level:draw())
+    self.view:draw(self.level:create_board())
 end
 
 return level_controller

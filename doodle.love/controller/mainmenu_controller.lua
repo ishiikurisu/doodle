@@ -16,6 +16,7 @@ end
 
 function mainmenu_controller:push(action)
     table.insert(self.actions, action)
+    return self
 end
 
 function mainmenu_controller:update(dt)

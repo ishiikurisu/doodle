@@ -1,10 +1,8 @@
-local level_view = {
-    sprites = { }
-}
+local level_view = { }
 level_view.__index = level_view
 
 function level_view:new()
-    local v = { }
+    local v = { sprites = { } }
     setmetatable(v, level_view)
 
     for it in love.filesystem.lines("art/assets.txt") do
@@ -12,12 +10,6 @@ function level_view:new()
     end
 
     return v
-end
-
-
--- READING FUNCTIONS
-function level_view:update()
-    return { }
 end
 
 -- DRAWING FUNCTIONS

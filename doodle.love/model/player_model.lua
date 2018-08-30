@@ -1,9 +1,4 @@
-local player_model = {
-    x = 0,
-    y = 0,
-    direction = "down",
-    items = { }
-}
+local player_model = { }
 player_model.__index = player_model
 
 function player_model:new(inlet)
